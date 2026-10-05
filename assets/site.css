@@ -142,6 +142,7 @@ a:hover{text-decoration-thickness:2px}
 .legend > div{display:flex;gap:10px;align-items:flex-start;flex:1 1 220px}
 .chip{font-size:10.5px;padding:4px 9px;letter-spacing:.1em;flex-shrink:0;line-height:1.4}
 .note{font-size:13.5px;color:var(--grey-600)}
+.listnote{font-size:11.5px;color:var(--grey-600);align-self:center;font-style:italic}
 
 /* chapter */
 .chapter{padding-top:72px}
@@ -467,6 +468,7 @@ footer.site a{color:rgba(255,255,255,.75)}
   html.print-sheet .field{gap:1px}
   html.print-sheet .sblock-h .n{width:20px;height:20px;font-size:9pt;border-radius:6px}
   html.print-sheet .chip{font-size:6.5pt;padding:2px 7px}
+  html.print-sheet .listnote{font-size:7pt}
   html.print-sheet .field textarea{height:auto!important;min-height:0}
   html.print-sheet .sheet-head{margin-bottom:2px}
   html.print-sheet ::placeholder{color:transparent!important}

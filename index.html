@@ -141,7 +141,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
       </ol>
       <div class="side-cta">
         <strong>Rather paste than read?</strong>
-        <p>Run three short queries, paste the CSVs into the Cost X-Ray and get the report in your browser.</p>
+        <p>Spend summary, cost per job, cluster CPU: paste three CSVs into the Cost X-Ray and get the report in your browser.</p>
         <a class="btn sm" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=side-cta">Open the Cost X-Ray</a>
       </div>
     </div>
@@ -182,8 +182,8 @@ ORDER BY list_cost_90d DESC;</code></pre>
           <a href="https://docs.databricks.com/aws/en/admin/system-tables/compute" rel="noopener" target="_blank">system.compute.node_types</a>
         </div>
         <div class="legend">
-          <div><span class="chip measured">Measured</span><span>Read directly from system tables: usage quantities, run outcomes, CPU samples, cluster settings.</span></div>
-          <div><span class="chip estimated">Estimated</span><span>Usage multiplied by <b>list price, before contract discounts</b>, or cost apportioned by time. Treat these as relative, not invoice-grade.</span></div>
+          <div><span class="chip measured">Measured</span><span>Read from system tables, with spend priced at <b>list price, before contract discounts</b>: baseline, cost by product, job cost, failed-run cost, traced %, CPU, tags, cluster settings.</span></div>
+          <div><span class="chip estimated">Estimated</span><span>Savings opportunities derived with a rule, such as moving all-purpose work to jobs compute, right-sizing, or the upper-bound attribution in Q11.</span></div>
           <div><span class="chip waste">Gap</span><span>Spend you cannot trace to an owner or job. A visibility gap to close, never a saving to claim.</span></div>
         </div>
       </div>
@@ -203,7 +203,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
 
       <article class="q" id="q01" data-q="q01">
         <div class="q-head"><span class="q-id">Q01</span><h3>90-day list cost by billing product and SKU</h3></div>
-        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip estimated">Estimated</span></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span></div>
         <p class="q-why">This is your baseline. Every later finding is a share of this number. Usage is joined to the list price that was valid <b>at the moment the usage happened</b>, so price changes inside the window are handled correctly.</p>
 <pre><code class="sql" data-file="Q01_cost_by_product_and_sku.sql">-- Q01  90-day list cost by billing product and SKU  (read-only)
 -- List price, before contract discounts. Uses pricing.effective_list.default,
@@ -249,7 +249,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
 
       <article class="q" id="q02" data-q="q02">
         <div class="q-head"><span class="q-id">Q02</span><h3>Top 10 jobs by cost over 90 days</h3></div>
-        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.jobs</code><span class="chip estimated">Estimated</span></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.jobs</code><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span></div>
         <p class="q-why">Spend concentrates. In most estates a handful of jobs carry a large share of job cost, and each one has a person who can change it. <code class="i">system.lakeflow.jobs</code> keeps full history (SCD2), so the query takes the <b>latest row per job</b> for its current name and owner.</p>
 <pre><code class="sql" data-file="Q02_top_10_jobs_by_cost.sql">-- Q02  Top 10 jobs by list cost, last 90 days  (read-only)
 WITH job_cost AS (
@@ -458,7 +458,7 @@ ORDER BY usage_rows DESC;</code></pre>
 
       <article class="q" id="q06" data-q="q06">
         <div class="q-head"><span class="q-id">Q06</span><h3>Cost of failed, errored and timed-out runs</h3></div>
-        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.job_run_timeline</code><code>system.lakeflow.jobs</code><span class="chip estimated">Estimated</span></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.job_run_timeline</code><code>system.lakeflow.jobs</code><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span></div>
         <p class="q-why">Run cost is summed from billing by <code class="i">job_run_id</code>, then labelled with the run's final <code class="i">result_state</code> from <code class="i">job_run_timeline</code> (values: SUCCEEDED, FAILED, SKIPPED, CANCELLED, TIMED_OUT, ERROR, BLOCKED). Part A is the summary; part B ranks the jobs.</p>
 <pre><code class="sql" data-file="Q06a_run_cost_by_outcome.sql">-- Q06 part A  Job run cost by final outcome, last 90 days  (read-only)
 WITH run_cost AS (
@@ -675,7 +675,7 @@ ORDER BY runs_90d DESC, longest_run_hours DESC;</code></pre>
         <div>
           <span class="kicker">Shortcut</span>
           <h3>Got the CSVs? Get the <em>report in seconds</em></h3>
-          <p>The Cost X-Ray gives you three short queries. Paste their CSV results back in and it builds the report in your browser. Nothing is uploaded.</p>
+          <p>The Cost X-Ray asks for three queries: a spend summary, cost per job and cluster CPU utilisation (the same ground as Q01, Q02 and Q09). Paste the CSV results in and it builds the report in your browser. Nothing is uploaded.</p>
         </div>
         <a class="btn" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=ch3-inline">Open the Cost X-Ray <span class="arr" aria-hidden="true">&rarr;</span></a>
       </aside>
@@ -1079,10 +1079,10 @@ ORDER BY list_cost_90d DESC;</code></pre>
       </div>
 
       <div class="sblock">
-        <div class="sblock-h"><span class="n">1</span><h4>90-day baseline</h4><span class="chip estimated">Estimated</span><span class="src">Q01</span></div>
+        <div class="sblock-h"><span class="n">1</span><h4>90-day baseline</h4><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span><span class="src">Q01</span></div>
         <div class="sgrid">
           <div class="field"><label for="f-total">Total list cost</label><div class="money" data-cur="$"><input id="f-total" name="total" inputmode="decimal" placeholder="0"></div></div>
-          <div class="calc"><span class="flabel">Annualised run-rate</span><span class="v" id="c-annual">&nbsp;</span></div>
+          <div class="calc"><span class="flabel">Annualised run-rate (projection)</span><span class="v" id="c-annual">&nbsp;</span></div>
           <div class="field"><label for="f-top1">Largest product, % of total</label><input id="f-top1" name="top1" placeholder="e.g. JOBS, 0%"></div>
           <div class="field"><label for="f-top2">Second product, % of total</label><input id="f-top2" name="top2" placeholder="e.g. ALL_PURPOSE, 0%"></div>
         </div>
@@ -1099,7 +1099,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
       </div>
 
       <div class="sblock">
-        <div class="sblock-h"><span class="n">3</span><h4>Top 10 jobs and owners</h4><span class="chip estimated">Estimated</span><span class="src">Q02</span></div>
+        <div class="sblock-h"><span class="n">3</span><h4>Top 10 jobs and owners</h4><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span><span class="src">Q02</span></div>
         <table class="tbl jobs" id="jobs-tbl">
           <thead><tr><th></th><th>Job</th><th>Owner</th><th style="width:150px">90-day list cost</th><th style="width:190px">Next action</th></tr></thead>
           <tbody></tbody>
@@ -1111,7 +1111,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
       </div>
 
       <div class="sblock">
-        <div class="sblock-h"><span class="n">4</span><h4>Reliability cost</h4><span class="chip estimated">Estimated</span><span class="src">Q06, Q07, Q08</span></div>
+        <div class="sblock-h"><span class="n">4</span><h4>Reliability cost</h4><span class="chip measured">Measured</span><span class="listnote">at list price, before contract discounts</span><span class="src">Q06, Q07, Q08</span></div>
         <div class="sgrid">
           <div class="field"><label for="f-failed">Failed, errored, timed-out run cost</label><div class="money" data-cur="$"><input id="f-failed" name="failed" inputmode="decimal" placeholder="0"></div></div>
           <div class="calc"><span class="flabel">Share of baseline</span><span class="v" id="c-failedpct">&nbsp;</span></div>
@@ -1121,7 +1121,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
       </div>
 
       <div class="sblock">
-        <div class="sblock-h"><span class="n">5</span><h4>Right-sizing flags</h4><span class="chip measured">Measured</span><span class="src">Q09, Q10, Q11</span></div>
+        <div class="sblock-h"><span class="n">5</span><h4>Right-sizing flags</h4><span class="chip measured">Measured</span><span class="chip estimated">Estimated: Q11</span><span class="src">Q09, Q10, Q11</span></div>
         <div class="sgrid">
           <div class="field"><label for="f-underutil">Under-utilised clusters</label><input id="f-underutil" name="underutil" inputmode="numeric" placeholder="0"></div>
           <div class="field"><label for="f-underutilcost">Their 30-day list cost</label><div class="money" data-cur="$"><input id="f-underutilcost" name="underutilcost" inputmode="decimal" placeholder="0"></div></div>
@@ -1197,7 +1197,7 @@ ORDER BY list_cost_90d DESC;</code></pre>
 
     <div class="tools">
       <a class="tool" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-xray">
-        <span class="kicker">Free tool</span><b>Cost X-Ray</b><span>Paste the CSVs from three short queries and get an instant report. Runs in your browser.</span><span class="go">Open the X-Ray &rarr;</span></a>
+        <span class="kicker">Free tool</span><b>Cost X-Ray</b><span>Paste three CSVs (spend summary, cost per job, cluster CPU utilisation) and get an instant report. Runs in your browser.</span><span class="go">Open the X-Ray &rarr;</span></a>
       <a class="tool" href="https://assessment.bighammerops.com/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-assessment">
         <span class="kicker">Offline</span><b>Full assessment</b><span>Seven read-only SQL queries in your own SQL warehouse. One defensible report back.</span><span class="go">Start the assessment &rarr;</span></a>
       <a class="tool" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-book">
