@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../brand/brand.css">
+<style>
+body{margin:0}
+.og{width:1200px;height:630px;position:relative;overflow:hidden;background:
+ radial-gradient(60% 70% at 92% 0%, rgba(186,153,255,.6), transparent 70%),
+ radial-gradient(45% 50% at 0% 100%, rgba(254,0,121,.10), transparent 70%),
+ linear-gradient(180deg,#F4EEFF 0%,#FFFFFF 80%);padding:60px 68px;box-sizing:border-box}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(86,0,239,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(86,0,239,.07) 1px,transparent 1px);background-size:40px 40px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 90%)}
+.og>*{position:relative}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top img{height:34px}
+.eb{font-family:Axiforma;font-weight:700;font-size:19px;letter-spacing:.16em;text-transform:uppercase;color:#FE0079}
+h1{font-family:Axiforma;font-weight:800;text-transform:uppercase;font-size:72px;line-height:.98;letter-spacing:-.015em;margin:36px 0 0;color:#141414;max-width:640px}
+h1 em{font-style:normal;color:#5600EF}
+p{font-family:Poppins;font-size:25px;line-height:1.45;color:#55556A;margin:22px 0 0;max-width:640px}
+.chips{display:flex;gap:12px;margin-top:28px}
+.c{font-family:Poppins;font-weight:600;font-size:17px;letter-spacing:.05em;text-transform:uppercase;padding:12px 18px;border-radius:6px;background:#FCFF00;color:#141414}
+.c.d{background:#141414;color:#fff}
+.code{position:absolute;right:-50px;top:170px;width:470px;background:#0D0D14;border-radius:20px;box-shadow:0 40px 80px -30px rgba(54,0,160,.6);transform:rotate(2deg);overflow:hidden}
+.bar{padding:14px 18px;border-bottom:1px solid #1E1E2B;font-family:Menlo,monospace;font-size:14px;color:#8C8CA6}
+pre{margin:0;padding:20px 22px;font-family:Menlo,monospace;font-size:15px;line-height:1.75;color:#E6E6F0}
+.k{color:#BA99FF;font-weight:700}.f{color:#7CC8F5}.s{color:#B7FF6E}.cm{color:#6F6F8A;font-style:italic}
+.rows{padding:4px 22px 24px;display:grid;gap:10px}
+.r{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;font-family:Menlo,monospace;font-size:13px;color:#C9C9DA}
+.t{height:9px;border-radius:9px;background:#1F1F2E;overflow:hidden}.t i{display:block;height:100%;background:linear-gradient(90deg,#5600EF,#8A5CFF);border-radius:9px}
+.r.h .t i{background:linear-gradient(90deg,#FE0079,#FF5FA8)}
+</style></head><body>
+<div class="og"><div class="grid"></div>
+<div class="top"><span class="eb">Free field guide &nbsp;|&nbsp; Databricks system tables</span><img src="../brand/bighammer-logo-dark.svg"></div>
+<h1>The Databricks Cost <em>Field Guide</em></h1>
+<p>13 copy-paste, read-only queries to see, trace and cut Databricks cost before your renewal.</p>
+<div class="chips"><span class="c">13 queries</span><span class="c d">Renewal Evidence Sheet</span></div>
+<div class="code"><div class="bar">Q01_cost_by_product.sql</div>
+<pre><span class="cm">-- 90-day list cost</span>
+<span class="k">SELECT</span> billing_origin_product,
+  <span class="f">SUM</span>(list_cost) <span class="k">AS</span> cost_90d
+<span class="k">FROM</span> priced
+<span class="k">GROUP BY ALL</span>;</pre>
+<div class="rows"><div class="r h"><span>ALL_PURPOSE</span><span class="t"><i style="width:86%"></i></span></div><div class="r"><span>JOBS</span><span class="t"><i style="width:62%"></i></span></div><div class="r"><span>SQL</span><span class="t"><i style="width:40%"></i></span></div><div class="r"><span>DLT</span><span class="t"><i style="width:21%"></i></span></div></div>
+</div></div></body></html>

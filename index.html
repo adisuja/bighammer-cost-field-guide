@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Databricks Cost Field Guide | Copy-paste system table SQL | BigHammer.ai</title>
+<meta name="description" content="13 read-only SQL queries against Databricks system tables to see, trace, measure, right-size, classify and prove your Databricks spend before a renewal. Plus a printable Renewal Evidence Sheet.">
+<link rel="canonical" href="https://adisuja.github.io/bighammer-cost-field-guide/">
+<meta name="theme-color" content="#0D0D14">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BigHammer.ai">
+<meta property="og:title" content="The Databricks Cost Field Guide">
+<meta property="og:description" content="13 copy-paste, read-only queries against Databricks system tables. See it, trace it, measure it, right-size it, classify it, prove it. Plus a printable Renewal Evidence Sheet.">
+<meta property="og:url" content="https://adisuja.github.io/bighammer-cost-field-guide/">
+<meta property="og:image" content="https://adisuja.github.io/bighammer-cost-field-guide/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Databricks Cost Field Guide by BigHammer.ai: 13 read-only system table queries">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Databricks Cost Field Guide">
+<meta name="twitter:description" content="13 copy-paste, read-only queries against Databricks system tables, plus a printable Renewal Evidence Sheet.">
+<meta name="twitter:image" content="https://adisuja.github.io/bighammer-cost-field-guide/og.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="brand/fonts/axiforma-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="brand/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="brand/brand.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#guide">Skip to the guide</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brandmark" href="#top" aria-label="The Databricks Cost Field Guide, back to top">
+      <img src="brand/bighammer-logo-light.svg" alt="BigHammer.ai" width="141" height="26">
+      <span class="tag">Cost Field Guide</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="#guide">Chapters</a>
+      <a href="#evidence-sheet">Evidence Sheet</a>
+      <a class="hide-md" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=topbar-xray">Cost X-Ray</a>
+      <a class="btn sm" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=topbar-cta">Book a call</a>
+    </nav>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="readbar"></span></div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span class="m-hide">Field guide</span><span class="sep m-hide">|</span><span>Databricks system tables</span><span class="sep">|</span><span>Free</span></div>
+      <h1>The Databricks Cost <em>Field Guide</em></h1>
+      <p class="lede">13 copy-paste SQL queries against Databricks system tables that show <b>where the money goes</b>, which jobs and owners drive it, and what is waste. Run them before your renewal and walk in with evidence, not estimates.</p>
+      <div class="ctas">
+        <a class="btn" href="#ch-see">Start with chapter 1 <span class="arr" aria-hidden="true">&rarr;</span></a>
+        <a class="btn ghost" href="#evidence-sheet">Open the Evidence Sheet</a>
+        <a class="hero-link" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=hero-cta">or book a 30-minute call <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <div class="meta">
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>Read-only queries</span>
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>No install, no signup</span>
+        <span><svg aria-hidden="true"><use href="#i-check"/></svg>Every column checked against Databricks docs</span>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-card">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span>Q01_cost_by_product.sql</div>
+<pre><code class="sql hl">SELECT billing_origin_product,
+       ROUND(SUM(list_cost), 2) AS list_cost_90d
+FROM priced
+GROUP BY ALL
+ORDER BY list_cost_90d DESC;</code></pre>
+        <div class="result">
+          <div class="result-h"><span>Result shape</span><span>Illustrative</span></div>
+          <div class="bars">
+            <div class="row hot"><span>ALL_PURPOSE</span><span class="track"><i style="width:86%"></i></span></div>
+            <div class="row"><span>JOBS</span><span class="track"><i style="width:64%"></i></span></div>
+            <div class="row"><span>SQL</span><span class="track"><i style="width:41%"></i></span></div>
+            <div class="row"><span>DLT</span><span class="track"><i style="width:22%"></i></span></div>
+            <div class="row"><span>MODEL_SERVING</span><span class="track"><i style="width:9%"></i></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-float"><b>90</b><span>days of evidence,<br>straight from system tables</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats" aria-label="What is in the guide">
+  <div class="wrap">
+    <div class="stat"><div class="num">13</div><p>Copy-paste, read-only queries</p></div>
+    <div class="stat"><div class="num"><em>9</em></div><p>Databricks system tables, nothing to install</p></div>
+    <div class="stat"><div class="num">6</div><p>Chapters, from see it to prove it</p></div>
+    <div class="stat"><div class="num"><em>1</em></div><p>Printable Renewal Evidence Sheet</p></div>
+  </div>
+</section>
+
+<!-- ============ GUIDE ============ -->
+<div class="wrap doc" id="guide">
+
+  <aside class="side" aria-label="Chapters">
+    <div class="side-inner">
+      <div class="side-progress">
+        <div class="lbl"><span>Queries copied</span><b><span class="copied-count">0</span> of 13</b></div>
+        <div class="meter"><i class="copied-meter"></i></div>
+      </div>
+      <h4>Chapters</h4>
+      <ol class="toc" id="toc">
+        <li><a href="#how-to-use" data-sec="how-to-use"><span class="n">0</span>How to use this guide</a></li>
+        <li><a href="#ch-see" data-sec="ch-see"><span class="n">1</span>See it</a>
+          <ul><li><a href="#q01" data-q="q01">Q01 Cost by product and SKU<span class="tick">&#10003;</span></a></li><li><a href="#q02" data-q="q02">Q02 Top 10 jobs<span class="tick">&#10003;</span></a></li></ul></li>
+        <li><a href="#ch-trace" data-sec="ch-trace"><span class="n">2</span>Trace it</a>
+          <ul><li><a href="#q03" data-q="q03">Q03 Traceable share<span class="tick">&#10003;</span></a></li><li><a href="#q04" data-q="q04">Q04 Untagged clusters<span class="tick">&#10003;</span></a></li><li><a href="#q05" data-q="q05">Q05 Unpriced usage<span class="tick">&#10003;</span></a></li></ul></li>
+        <li><a href="#ch-measure" data-sec="ch-measure"><span class="n">3</span>Measure it</a>
+          <ul><li><a href="#q06" data-q="q06">Q06 Failed run cost<span class="tick">&#10003;</span></a></li><li><a href="#q07" data-q="q07">Q07 Repairs and retries<span class="tick">&#10003;</span></a></li><li><a href="#q08" data-q="q08">Q08 Jobs with no timeout<span class="tick">&#10003;</span></a></li></ul></li>
+        <li><a href="#ch-rightsize" data-sec="ch-rightsize"><span class="n">4</span>Right-size it</a>
+          <ul><li><a href="#q09" data-q="q09">Q09 CPU busy %<span class="tick">&#10003;</span></a></li><li><a href="#q10" data-q="q10">Q10 Fixed size, never sleeps<span class="tick">&#10003;</span></a></li><li><a href="#q11" data-q="q11">Q11 Jobs on all-purpose<span class="tick">&#10003;</span></a></li></ul></li>
+        <li><a href="#ch-classify" data-sec="ch-classify"><span class="n">5</span>Classify it</a>
+          <ul><li><a href="#q12" data-q="q12">Q12 Complexity worksheet<span class="tick">&#10003;</span></a></li><li><a href="#scorer" data-q="scorer">Keep or move scorer</a></li></ul></li>
+        <li><a href="#ch-prove" data-sec="ch-prove"><span class="n">6</span>Prove it</a>
+          <ul><li><a href="#q13" data-q="q13">Q13 Parity checklist<span class="tick">&#10003;</span></a></li></ul></li>
+        <li class="extra"><a href="#evidence-sheet" data-sec="evidence-sheet"><span class="n">&#9998;</span>Renewal Evidence Sheet</a></li>
+        <li class="extra"><a href="#full-assessment" data-sec="full-assessment"><span class="n">+</span>What the assessment adds</a></li>
+      </ol>
+      <div class="side-cta">
+        <strong>Rather paste than read?</strong>
+        <p>Run three short queries, paste the CSVs into the Cost X-Ray and get the report in your browser.</p>
+        <a class="btn sm" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=side-cta">Open the Cost X-Ray</a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="content">
+
+    <div class="mbar" id="mbar">
+      <button class="mbar-btn" type="button" aria-expanded="false" aria-controls="mbar-menu">
+        <span class="n" id="mbar-n">0</span><span class="t" id="mbar-t">How to use this guide</span><span class="c"><span class="copied-count">0</span>/13 copied</span>
+        <svg aria-hidden="true"><use href="#i-chev"/></svg>
+      </button>
+      <div class="meter"><i class="copied-meter"></i></div>
+      <nav class="mbar-menu" id="mbar-menu" aria-label="Chapters"></nav>
+    </div>
+
+    <!-- ===== 0. HOW TO USE ===== -->
+    <section id="how-to-use" class="chapter" style="padding-top:8px" data-title="How to use this guide" data-n="0">
+      <div class="card intro-card">
+        <span class="kicker">Before you start</span>
+        <h2>How to use <em>this guide</em></h2>
+        <p>Run these queries in a <b>Databricks SQL editor or notebook</b> with read access to system tables. Every query is <b>read-only</b>: SELECT statements only, nothing is written, changed or deleted. A small SQL warehouse is enough.</p>
+        <div class="intro-grid">
+          <div><b>1. Get access</b><span>A metastore admin grants USE and SELECT on the <code class="i">system.billing</code>, <code class="i">system.lakeflow</code> and <code class="i">system.compute</code> schemas.</span></div>
+          <div><b>2. Run in order</b><span>Each chapter builds on the last. Chapter 1 gives the baseline every later number is measured against.</span></div>
+          <div><b>3. Write it down</b><span>Drop each answer into the <a href="#evidence-sheet">Renewal Evidence Sheet</a> at the end and print it to PDF.</span></div>
+        </div>
+        <span class="flabel">Tables used (links go to the official Databricks reference)</span>
+        <div class="tables-list">
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/billing" rel="noopener" target="_blank">system.billing.usage</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/pricing" rel="noopener" target="_blank">system.billing.list_prices</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/jobs" rel="noopener" target="_blank">system.lakeflow.jobs</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/jobs" rel="noopener" target="_blank">system.lakeflow.job_tasks</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/jobs" rel="noopener" target="_blank">system.lakeflow.job_run_timeline</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/jobs" rel="noopener" target="_blank">system.lakeflow.job_task_run_timeline</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/compute" rel="noopener" target="_blank">system.compute.clusters</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/compute" rel="noopener" target="_blank">system.compute.node_timeline</a>
+          <a href="https://docs.databricks.com/aws/en/admin/system-tables/compute" rel="noopener" target="_blank">system.compute.node_types</a>
+        </div>
+        <div class="legend">
+          <div><span class="chip measured">Measured</span><span>Read directly from system tables: usage quantities, run outcomes, CPU samples, cluster settings.</span></div>
+          <div><span class="chip estimated">Estimated</span><span>Usage multiplied by <b>list price, before contract discounts</b>, or cost apportioned by time. Treat these as relative, not invoice-grade.</span></div>
+          <div><span class="chip waste">Gap</span><span>Spend you cannot trace to an owner or job. A visibility gap to close, never a saving to claim.</span></div>
+        </div>
+      </div>
+      <p class="note">System tables keep a rolling history (most of the tables used here retain around a year; <code class="i">node_timeline</code> keeps 90 days). If a table was enabled recently, your 90-day window is shorter than it looks: check <code class="i">MIN(usage_date)</code> first. All timestamps are UTC.</p>
+    </section>
+
+    <!-- ===== 1. SEE IT ===== -->
+    <section id="ch-see" class="chapter" data-title="See it" data-n="1">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">01</div>
+        <div>
+          <span class="kicker">Chapter 1</span>
+          <h2>See <em>it</em></h2>
+          <p class="why">You cannot cut what you have not sized. Two queries give you the 90-day baseline: <b>which products and SKUs</b> the money goes to, and <b>which jobs</b> carry the most of it.</p>
+        </div>
+      </div>
+
+      <article class="q" id="q01" data-q="q01">
+        <div class="q-head"><span class="q-id">Q01</span><h3>90-day list cost by billing product and SKU</h3></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip estimated">Estimated</span></div>
+        <p class="q-why">This is your baseline. Every later finding is a share of this number. Usage is joined to the list price that was valid <b>at the moment the usage happened</b>, so price changes inside the window are handled correctly.</p>
+<pre><code class="sql" data-file="Q01_cost_by_product_and_sku.sql">-- Q01  90-day list cost by billing product and SKU  (read-only)
+-- List price, before contract discounts. Uses pricing.effective_list.default,
+-- falling back to pricing.default if effective_list is empty.
+WITH priced AS (
+  SELECT
+    u.billing_origin_product,
+    u.sku_name,
+    u.usage_unit,
+    p.currency_code,
+    u.usage_quantity,
+    u.usage_quantity
+      * COALESCE(p.pricing.effective_list.default, p.pricing.default) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+)
+SELECT
+  billing_origin_product,
+  sku_name,
+  usage_unit,
+  currency_code,
+  ROUND(SUM(usage_quantity), 2)                                AS usage_quantity_90d,
+  ROUND(SUM(list_cost), 2)                                     AS list_cost_90d,
+  ROUND(100 * SUM(list_cost) / SUM(SUM(list_cost)) OVER (), 1) AS pct_of_total
+FROM priced
+GROUP BY ALL
+HAVING SUM(usage_quantity) &lt;&gt; 0
+ORDER BY list_cost_90d DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>One row per product and SKU. <code class="i">pct_of_total</code> tells you where to look first.</li><li>Sum <code class="i">list_cost_90d</code> for your 90-day baseline. Multiply by 365 / 90 for an annualised run-rate.</li><li>Corrections (RETRACTION and RESTATEMENT rows) net out because the query sums quantities.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Scheduled production work shows up mostly under <b>JOBS</b> SKUs, not <b>ALL_PURPOSE</b>.</li><li>No single SKU you cannot explain in one sentence.</li><li>The total is within a few percent of your invoice once your discount is applied.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Benchmark</span><p>If <b>ALL_PURPOSE</b> SKUs are a large share of spend and most of your workload is scheduled, chapter 4 (Q11) is likely your biggest lever. All-purpose compute carries a higher DBU list rate than jobs compute; check both SKUs in <code class="i">list_prices</code> for your cloud.</p></div>
+      </article>
+
+      <article class="q" id="q02" data-q="q02">
+        <div class="q-head"><span class="q-id">Q02</span><h3>Top 10 jobs by cost over 90 days</h3></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.jobs</code><span class="chip estimated">Estimated</span></div>
+        <p class="q-why">Spend concentrates. In most estates a handful of jobs carry a large share of job cost, and each one has a person who can change it. <code class="i">system.lakeflow.jobs</code> keeps full history (SCD2), so the query takes the <b>latest row per job</b> for its current name and owner.</p>
+<pre><code class="sql" data-file="Q02_top_10_jobs_by_cost.sql">-- Q02  Top 10 jobs by list cost, last 90 days  (read-only)
+WITH job_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.job_id                     AS job_id,
+    COUNT(DISTINCT u.usage_metadata.job_run_id) AS runs,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.usage_metadata.job_id IS NOT NULL
+  GROUP BY ALL
+),
+latest_jobs AS (           -- jobs is SCD2: keep the most recent row per job
+  SELECT workspace_id, job_id, name, run_as_user_name, creator_user_name, tags, delete_time
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+)
+SELECT
+  c.workspace_id,
+  c.job_id,
+  j.name                                    AS job_name,
+  j.run_as_user_name,
+  j.creator_user_name,
+  j.tags['owner']                           AS owner_tag,
+  j.delete_time IS NOT NULL                 AS job_deleted,
+  c.runs,
+  ROUND(c.list_cost, 2)                     AS list_cost_90d,
+  ROUND(c.list_cost / NULLIF(c.runs, 0), 2) AS list_cost_per_run
+FROM job_cost c
+LEFT JOIN latest_jobs j USING (workspace_id, job_id)
+ORDER BY c.list_cost DESC
+LIMIT 10;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>Divide the top 10 total by your Q01 baseline: that share is how concentrated your job spend is.</li><li><code class="i">list_cost_per_run</code> separates "runs too often" from "each run is too heavy".</li><li>A blank <code class="i">job_name</code> usually means a one-time submit run with no job definition.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Every one of the 10 has a named owner (tag or run-as) who knows why it costs what it costs.</li><li>No deleted jobs still on the list.</li><li>Per-run cost is stable week to week, not creeping up.</li></ul></div>
+        </div>
+        <p class="caveat"><svg aria-hidden="true"><use href="#i-warn"/></svg><span>Only jobs on jobs compute and serverless carry a <code class="i">job_id</code> in billing. Jobs that run on all-purpose clusters are billed to the cluster, not the job, so they are invisible here. Q11 finds them.</span></p>
+      </article>
+    </section>
+
+    <!-- ===== 2. TRACE IT ===== -->
+    <section id="ch-trace" class="chapter" data-title="Trace it" data-n="2">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">02</div>
+        <div>
+          <span class="kicker">Chapter 2</span>
+          <h2>Trace <em>it</em></h2>
+          <p class="why">A number nobody owns is a number nobody will cut. This chapter measures how much spend you can tie to a job run, which clusters have no owner or cost-centre, and whether any usage is missing a price. <b>Untraced spend is a visibility gap, not a saving.</b></p>
+        </div>
+      </div>
+
+      <article class="q" id="q03" data-q="q03">
+        <div class="q-head"><span class="q-id">Q03</span><h3>Share of spend traceable to a job run</h3></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip measured">Measured</span><span class="chip waste">Gap</span></div>
+        <p class="q-why">Billing rows with a <code class="i">job_run_id</code> can be traced to one run of one job, with a run-as identity and a schedule. Everything else needs tags or detective work. This query gives the traced share in money and percent, overall and per product.</p>
+<pre><code class="sql" data-file="Q03_traceable_share.sql">-- Q03  Share of 90-day list cost traceable to a job run  (read-only)
+WITH priced AS (
+  SELECT
+    u.billing_origin_product,
+    u.usage_metadata.job_run_id AS job_run_id,
+    u.usage_quantity
+      * COALESCE(p.pricing.effective_list.default, p.pricing.default) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+)
+SELECT
+  COALESCE(billing_origin_product, 'ALL PRODUCTS (TOTAL)') AS billing_origin_product,
+  GROUPING(billing_origin_product)                         AS is_total,
+  ROUND(SUM(list_cost), 2)                                 AS list_cost_90d,
+  ROUND(SUM(CASE WHEN job_run_id IS NOT NULL THEN list_cost ELSE 0 END), 2) AS traced_to_job_run,
+  ROUND(SUM(CASE WHEN job_run_id IS NULL     THEN list_cost ELSE 0 END), 2) AS not_traced,
+  ROUND(100 * SUM(CASE WHEN job_run_id IS NOT NULL THEN list_cost ELSE 0 END)
+            / NULLIF(SUM(list_cost), 0), 1)                AS traced_pct
+FROM priced
+GROUP BY ROLLUP (billing_origin_product)
+ORDER BY is_total DESC, list_cost_90d DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>The first row is the total: <code class="i">traced_pct</code> is your headline traceability number.</li><li>SQL warehouses, interactive notebooks and model serving never carry a job run id. That spend is not "bad", it simply needs tags or warehouse owners to trace.</li><li>Large <code class="i">not_traced</code> under ALL_PURPOSE often hides scheduled work (see Q11).</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>For JOBS, close to 100% traced.</li><li>For everything else, the untraced part is covered by owner and cost-centre tags (Q04).</li><li>The traced share goes up quarter on quarter.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Rule</span><p>Report the untraced figure as <b>"spend we cannot attribute yet"</b>. Do not count it as savings, and do not assume it is waste. It becomes a finding only once it is traced.</p></div>
+      </article>
+
+      <article class="q" id="q04" data-q="q04">
+        <div class="q-head"><span class="q-id">Q04</span><h3>Clusters missing owner, cost-centre or environment tags</h3></div>
+        <div class="q-tables"><code>system.compute.clusters</code><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip measured">Measured</span></div>
+        <p class="q-why"><code class="i">system.compute.clusters</code> is SCD2, so the query takes the latest row per cluster, then checks its <code class="i">tags</code> map. Tag keys are normalised (case, dashes and underscores ignored), so <code class="i">Cost-Centre</code>, <code class="i">cost_center</code> and <code class="i">CostCentre</code> all count. Edit the key lists to match your tagging policy.</p>
+<pre><code class="sql" data-file="Q04_untagged_clusters.sql">-- Q04  Live clusters missing owner / cost-centre / environment tags  (read-only)
+WITH latest_clusters AS (  -- clusters is SCD2: keep the most recent row per cluster
+  SELECT *
+  FROM system.compute.clusters
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, cluster_id ORDER BY change_time DESC) = 1
+),
+cluster_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.cluster_id AS cluster_id,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.usage_metadata.cluster_id IS NOT NULL
+  GROUP BY ALL
+),
+tag_check AS (
+  SELECT
+    c.workspace_id, c.cluster_id, c.cluster_name, c.owned_by, c.cluster_source,
+    transform(COALESCE(map_keys(c.tags), array()),
+              k -&gt; lower(regexp_replace(k, '[^A-Za-z]', ''))) AS keys_norm
+  FROM latest_clusters c
+  WHERE c.delete_time IS NULL
+    AND c.cluster_source IN ('UI', 'API')   -- remove to include job clusters
+)
+SELECT
+  t.workspace_id,
+  t.cluster_id,
+  t.cluster_name,
+  t.owned_by,
+  t.cluster_source,
+  NOT array_contains(t.keys_norm, 'owner')                            AS missing_owner,
+  NOT arrays_overlap(t.keys_norm, array('costcentre', 'costcenter'))  AS missing_cost_centre,
+  NOT arrays_overlap(t.keys_norm, array('environment', 'env'))        AS missing_environment,
+  ROUND(COALESCE(cc.list_cost, 0), 2)                                 AS list_cost_90d
+FROM tag_check t
+LEFT JOIN cluster_cost cc USING (workspace_id, cluster_id)
+WHERE NOT array_contains(t.keys_norm, 'owner')
+   OR NOT arrays_overlap(t.keys_norm, array('costcentre', 'costcenter'))
+   OR NOT arrays_overlap(t.keys_norm, array('environment', 'env'))
+ORDER BY list_cost_90d DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>Sorted by 90-day cost, so the top rows are the untagged spend that matters.</li><li><code class="i">owned_by</code> is the creator. It tells you who to ask, even when the owner tag is missing.</li><li>For job clusters and serverless, check <code class="i">custom_tags</code> on <code class="i">system.billing.usage</code> instead: job tags flow through there.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Zero rows, enforced by a cluster policy that requires the tags.</li><li>If not zero, the untagged clusters are a small share of the Q01 baseline and each has a named follow-up.</li></ul></div>
+        </div>
+      </article>
+
+      <article class="q" id="q05" data-q="q05">
+        <div class="q-head"><span class="q-id">Q05</span><h3>Usage rows with no matching list price</h3></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">A quiet check that protects every other number. If usage has no price row for its SKU, cloud, unit and time, the joins in Q01 to Q04 drop it and your baseline is understated. This query finds what would fall through.</p>
+<pre><code class="sql" data-file="Q05_unpriced_usage.sql">-- Q05  Usage with no matching list price, last 90 days  (read-only)
+SELECT
+  u.billing_origin_product,
+  u.sku_name,
+  u.cloud,
+  u.usage_unit,
+  COUNT(*)                        AS usage_rows,
+  ROUND(SUM(u.usage_quantity), 2) AS usage_quantity_90d,
+  MIN(u.usage_date)               AS first_seen,
+  MAX(u.usage_date)               AS last_seen
+FROM system.billing.usage u
+LEFT JOIN system.billing.list_prices p
+  ON  u.sku_name   = p.sku_name
+  AND u.cloud      = p.cloud
+  AND u.usage_unit = p.usage_unit
+  AND u.usage_start_time &gt;= p.price_start_time
+  AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+  AND p.sku_name IS NULL
+GROUP BY ALL
+ORDER BY usage_rows DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>No rows: every unit of usage was priced. Your baseline is complete.</li><li>Rows with tiny quantities: usually new or preview SKUs. Note them and move on.</li><li>Rows with large quantities: your baseline is missing real spend. Fix this before quoting any number.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <p>Zero rows, or only rows whose quantity is immaterial against the Q01 baseline.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== 3. MEASURE IT ===== -->
+    <section id="ch-measure" class="chapter" data-title="Measure it" data-n="3">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">03</div>
+        <div>
+          <span class="kicker">Chapter 3</span>
+          <h2>Measure <em>it</em></h2>
+          <p class="why">Failed runs bill exactly like successful ones. So do repairs, and so does a job that hangs for six hours because nobody set a timeout. These three queries put a <b>list-price figure on the reliability tax</b>.</p>
+        </div>
+      </div>
+
+      <article class="q" id="q06" data-q="q06">
+        <div class="q-head"><span class="q-id">Q06</span><h3>Cost of failed, errored and timed-out runs</h3></div>
+        <div class="q-tables"><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.job_run_timeline</code><code>system.lakeflow.jobs</code><span class="chip estimated">Estimated</span></div>
+        <p class="q-why">Run cost is summed from billing by <code class="i">job_run_id</code>, then labelled with the run's final <code class="i">result_state</code> from <code class="i">job_run_timeline</code> (values: SUCCEEDED, FAILED, SKIPPED, CANCELLED, TIMED_OUT, ERROR, BLOCKED). Part A is the summary; part B ranks the jobs.</p>
+<pre><code class="sql" data-file="Q06a_run_cost_by_outcome.sql">-- Q06 part A  Job run cost by final outcome, last 90 days  (read-only)
+WITH run_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.job_id     AS job_id,
+    u.usage_metadata.job_run_id AS run_id,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.usage_metadata.job_run_id IS NOT NULL
+  GROUP BY ALL
+),
+run_outcome AS (           -- result_state is only set on the row that ends a run
+  SELECT workspace_id, job_id, run_id, result_state, termination_code
+  FROM system.lakeflow.job_run_timeline
+  WHERE result_state IS NOT NULL
+    AND period_end_time &gt;= current_date() - INTERVAL 97 DAYS
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id, run_id
+                             ORDER BY period_end_time DESC) = 1
+)
+SELECT
+  o.result_state,
+  COUNT(*)                                                       AS runs,
+  ROUND(SUM(c.list_cost), 2)                                     AS list_cost_90d,
+  ROUND(100 * SUM(c.list_cost) / SUM(SUM(c.list_cost)) OVER (), 1) AS pct_of_job_run_cost
+FROM run_cost c
+JOIN run_outcome o USING (workspace_id, job_id, run_id)
+GROUP BY ALL
+ORDER BY list_cost_90d DESC;</code></pre>
+<pre><code class="sql" data-file="Q06b_jobs_by_failed_run_cost.sql">-- Q06 part B  Jobs ranked by failed / errored / timed-out run cost  (read-only)
+WITH run_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.job_id     AS job_id,
+    u.usage_metadata.job_run_id AS run_id,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.usage_metadata.job_run_id IS NOT NULL
+  GROUP BY ALL
+),
+run_outcome AS (
+  SELECT workspace_id, job_id, run_id, result_state, termination_code
+  FROM system.lakeflow.job_run_timeline
+  WHERE result_state IS NOT NULL
+    AND period_end_time &gt;= current_date() - INTERVAL 97 DAYS
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id, run_id
+                             ORDER BY period_end_time DESC) = 1
+),
+latest_jobs AS (
+  SELECT workspace_id, job_id, name, run_as_user_name
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+)
+SELECT
+  c.workspace_id,
+  c.job_id,
+  j.name                                         AS job_name,
+  j.run_as_user_name,
+  COUNT(*)                                       AS failed_runs,
+  ROUND(SUM(c.list_cost), 2)                     AS failed_run_list_cost_90d,
+  concat_ws(', ', collect_set(o.termination_code)) AS termination_codes
+FROM run_cost c
+JOIN run_outcome o USING (workspace_id, job_id, run_id)
+LEFT JOIN latest_jobs j USING (workspace_id, job_id)
+WHERE o.result_state IN ('FAILED', 'ERROR', 'TIMED_OUT')
+GROUP BY ALL
+ORDER BY failed_run_list_cost_90d DESC
+LIMIT 20;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>Add FAILED, ERROR and TIMED_OUT from part A: that is your failed-run cost for the Evidence Sheet.</li><li>In part B, <code class="i">termination_codes</code> point to the fix: CLUSTER_ERROR and CLOUD_FAILURE are platform issues, RUN_EXECUTION_ERROR and DRIVER_ERROR are code or sizing issues.</li><li>A run that failed and was later repaired to success counts as SUCCEEDED here. Q07 catches those.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Failed, errored and timed-out runs together are a low single-digit share of job run cost.</li><li>No job appears in part B two quarters in a row.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Threshold</span><p>Treat any job whose failed-run cost exceeds <b>10% of its own 90-day cost</b> as a reliability ticket, not a cost ticket. Fixing the failure usually removes the cost.</p></div>
+      </article>
+
+      <article class="q" id="q07" data-q="q07">
+        <div class="q-head"><span class="q-id">Q07</span><h3>Jobs with the most repairs and task retries</h3></div>
+        <div class="q-tables"><code>system.lakeflow.job_run_timeline</code><code>system.lakeflow.job_task_run_timeline</code><code>system.lakeflow.jobs</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">When a run is repaired, <code class="i">job_run_timeline</code> records another row with a result state for the <b>same run_id</b>, so terminal rows minus one equals repair attempts (the same logic Databricks uses in its own repair query). Part B counts task attempts beyond one per task per run, which captures automatic task retries.</p>
+<pre><code class="sql" data-file="Q07a_repaired_runs_by_job.sql">-- Q07 part A  Jobs with the most repaired runs, last 90 days  (read-only)
+WITH run_attempts AS (
+  SELECT
+    workspace_id, job_id, run_id,
+    COUNT(*)                              AS terminal_rows,
+    MAX_BY(result_state, period_end_time) AS final_state
+  FROM system.lakeflow.job_run_timeline
+  WHERE result_state IS NOT NULL
+    AND period_end_time &gt;= current_date() - INTERVAL 90 DAYS
+  GROUP BY ALL
+),
+latest_jobs AS (
+  SELECT workspace_id, job_id, name, run_as_user_name
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+)
+SELECT
+  r.workspace_id,
+  r.job_id,
+  j.name                                                    AS job_name,
+  j.run_as_user_name,
+  COUNT(*)                                                  AS runs,
+  SUM(CASE WHEN r.terminal_rows &gt; 1 THEN 1 ELSE 0 END)      AS repaired_runs,
+  SUM(r.terminal_rows - 1)                                  AS repair_attempts,
+  ROUND(100 * SUM(CASE WHEN r.terminal_rows &gt; 1 THEN 1 ELSE 0 END) / COUNT(*), 1)
+                                                            AS repaired_pct,
+  SUM(CASE WHEN r.final_state &lt;&gt; 'SUCCEEDED' THEN 1 ELSE 0 END) AS runs_not_succeeded
+FROM run_attempts r
+LEFT JOIN latest_jobs j USING (workspace_id, job_id)
+GROUP BY ALL
+HAVING SUM(r.terminal_rows - 1) &gt; 0
+ORDER BY repair_attempts DESC
+LIMIT 20;</code></pre>
+<pre><code class="sql" data-file="Q07b_task_retries.sql">-- Q07 part B  Tasks that needed more than one attempt per run, last 90 days  (read-only)
+SELECT
+  workspace_id,
+  job_id,
+  task_key,
+  COUNT(DISTINCT job_run_id)                          AS job_runs,
+  COUNT(DISTINCT run_id)                              AS task_attempts,
+  COUNT(DISTINCT run_id) - COUNT(DISTINCT job_run_id) AS extra_attempts
+FROM system.lakeflow.job_task_run_timeline
+WHERE result_state IS NOT NULL
+  AND period_end_time &gt;= current_date() - INTERVAL 90 DAYS
+GROUP BY ALL
+HAVING COUNT(DISTINCT run_id) - COUNT(DISTINCT job_run_id) &gt; 0
+ORDER BY extra_attempts DESC
+LIMIT 25;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li><code class="i">repaired_pct</code> is the share of runs that needed a human or a rerun to finish.</li><li>High <code class="i">extra_attempts</code> on one task key means the retry policy is masking a flaky step. Each attempt bills compute.</li><li>Pair with Q06 part B: a job high on both lists is your first reliability fix.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Repairs are rare and explainable (an upstream outage, a known data issue).</li><li>No task retries routinely on every run.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Threshold</span><p>A job with <b>more than 5% of runs repaired</b>, or a task with extra attempts on <b>most</b> of its runs, deserves a root-cause fix rather than another retry.</p></div>
+      </article>
+
+      <article class="q" id="q08" data-q="q08">
+        <div class="q-head"><span class="q-id">Q08</span><h3>Jobs and tasks with no timeout configured</h3></div>
+        <div class="q-tables"><code>system.lakeflow.jobs</code><code>system.lakeflow.job_tasks</code><code>system.lakeflow.job_run_timeline</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">Both <code class="i">jobs</code> and <code class="i">job_tasks</code> carry a <code class="i">timeout_seconds</code> column, where 0 or empty means no limit. A hung job with no timeout bills until someone notices. The query lists live jobs where the job, or any of its tasks, has no timeout, with recent run count and longest run.</p>
+<pre><code class="sql" data-file="Q08_jobs_without_timeout.sql">-- Q08  Live jobs with no job-level or task-level timeout  (read-only)
+WITH latest_jobs AS (
+  SELECT *
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+),
+latest_tasks AS (  -- job_tasks is SCD2 too
+  SELECT *
+  FROM system.lakeflow.job_tasks
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id, task_key ORDER BY change_time DESC) = 1
+),
+task_timeouts AS (
+  SELECT
+    workspace_id, job_id,
+    COUNT(*)                                                     AS tasks,
+    SUM(CASE WHEN COALESCE(timeout_seconds, 0) = 0 THEN 1 ELSE 0 END) AS tasks_without_timeout
+  FROM latest_tasks
+  WHERE delete_time IS NULL
+  GROUP BY ALL
+),
+recent_runs AS (
+  SELECT
+    workspace_id, job_id,
+    COUNT(DISTINCT run_id)                                         AS runs_90d,
+    MAX(CASE WHEN result_state IS NOT NULL THEN run_duration_seconds END) AS longest_run_seconds
+  FROM system.lakeflow.job_run_timeline
+  WHERE period_end_time &gt;= current_date() - INTERVAL 90 DAYS
+  GROUP BY ALL
+)
+SELECT
+  j.workspace_id,
+  j.job_id,
+  j.name                                      AS job_name,
+  j.run_as_user_name,
+  j.paused,
+  COALESCE(j.timeout_seconds, 0)              AS job_timeout_seconds,
+  t.tasks,
+  t.tasks_without_timeout,
+  COALESCE(r.runs_90d, 0)                     AS runs_90d,
+  ROUND(r.longest_run_seconds / 3600.0, 2)    AS longest_run_hours
+FROM latest_jobs j
+LEFT JOIN task_timeouts t USING (workspace_id, job_id)
+LEFT JOIN recent_runs  r USING (workspace_id, job_id)
+WHERE j.delete_time IS NULL
+  AND (COALESCE(j.timeout_seconds, 0) = 0 OR t.tasks_without_timeout &gt; 0)
+ORDER BY runs_90d DESC, longest_run_hours DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li><code class="i">job_timeout_seconds = 0</code> and <code class="i">tasks_without_timeout = tasks</code>: nothing stops a hung run.</li><li>A job-level timeout alone still protects the run, so treat task-only gaps as lower priority.</li><li><code class="i">longest_run_hours</code> gives a sane starting value for the timeout: a margin above the longest healthy run.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <p>Every scheduled job has a job-level timeout, typically set at 1.5x to 2x its longest healthy run. Ideally enforced by a review check on job definitions.</p></div>
+        </div>
+      </article>
+
+      <aside class="inline-cta" aria-label="Cost X-Ray">
+        <div>
+          <span class="kicker">Shortcut</span>
+          <h3>Got the CSVs? Get the <em>report in seconds</em></h3>
+          <p>The Cost X-Ray gives you three short queries. Paste their CSV results back in and it builds the report in your browser. Nothing is uploaded.</p>
+        </div>
+        <a class="btn" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=ch3-inline">Open the Cost X-Ray <span class="arr" aria-hidden="true">&rarr;</span></a>
+      </aside>
+    </section>
+
+    <!-- ===== 4. RIGHT-SIZE IT ===== -->
+    <section id="ch-rightsize" class="chapter" data-title="Right-size it" data-n="4">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">04</div>
+        <div>
+          <span class="kicker">Chapter 4</span>
+          <h2>Right-size <em>it</em></h2>
+          <p class="why">Most waste is configuration, not code: clusters that idle at low CPU, autoscaling that cannot scale, interactive clusters that never sleep, and scheduled jobs running on the most expensive compute type. <b>These are the cheapest fixes you will find.</b></p>
+        </div>
+      </div>
+
+      <article class="q" id="q09" data-q="q09">
+        <div class="q-head"><span class="q-id">Q09</span><h3>CPU busy % per cluster: average and p95</h3></div>
+        <div class="q-tables"><code>system.compute.node_timeline</code><code>system.compute.clusters</code><code>system.billing.usage</code><code>system.billing.list_prices</code><span class="chip measured">Measured</span></div>
+        <p class="q-why"><code class="i">node_timeline</code> records one row per node per minute. CPU busy is <code class="i">cpu_user_percent + cpu_system_percent</code>. Drivers are excluded unless the cluster is single-node, because an idle driver would drag every average down. The window is 30 days to keep the scan light; widen it to 90 if you like.</p>
+<pre><code class="sql" data-file="Q09_cpu_busy_per_cluster.sql">-- Q09  CPU busy % per cluster (avg and p95), last 30 days  (read-only)
+WITH nodes AS (
+  SELECT
+    workspace_id, cluster_id, driver, start_time, mem_used_percent,
+    cpu_user_percent + cpu_system_percent AS cpu_busy_pct,
+    MAX(CASE WHEN driver THEN 0 ELSE 1 END)
+      OVER (PARTITION BY workspace_id, cluster_id) AS has_workers
+  FROM system.compute.node_timeline
+  WHERE start_time &gt;= current_date() - INTERVAL 30 DAYS
+),
+per_cluster AS (
+  SELECT
+    workspace_id, cluster_id,
+    COUNT(DISTINCT date_trunc('MINUTE', start_time)) AS active_minutes,
+    AVG(cpu_busy_pct)                                AS avg_cpu_busy_pct,
+    PERCENTILE_APPROX(cpu_busy_pct, 0.95)            AS p95_cpu_busy_pct,
+    AVG(mem_used_percent)                            AS avg_mem_used_pct
+  FROM nodes
+  WHERE driver = false OR has_workers = 0   -- workers only, unless single-node
+  GROUP BY ALL
+),
+latest_clusters AS (
+  SELECT workspace_id, cluster_id, cluster_name, cluster_source, worker_node_type, owned_by
+  FROM system.compute.clusters
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, cluster_id ORDER BY change_time DESC) = 1
+),
+cluster_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.cluster_id AS cluster_id,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 30 DAYS
+    AND u.usage_metadata.cluster_id IS NOT NULL
+  GROUP BY ALL
+)
+SELECT
+  pc.workspace_id,
+  pc.cluster_id,
+  c.cluster_name,
+  c.cluster_source,
+  c.worker_node_type,
+  c.owned_by,
+  ROUND(pc.active_minutes / 60.0, 1)  AS active_hours,
+  ROUND(pc.avg_cpu_busy_pct, 1)       AS avg_cpu_busy_pct,
+  ROUND(pc.p95_cpu_busy_pct, 1)       AS p95_cpu_busy_pct,
+  ROUND(pc.avg_mem_used_pct, 1)       AS avg_mem_used_pct,
+  ROUND(COALESCE(cc.list_cost, 0), 2) AS list_cost_30d,
+  (pc.active_minutes &gt;= 30
+   AND pc.avg_cpu_busy_pct &lt; 20
+   AND pc.p95_cpu_busy_pct &lt; 40)      AS under_utilised
+FROM per_cluster pc
+LEFT JOIN latest_clusters c  USING (workspace_id, cluster_id)
+LEFT JOIN cluster_cost    cc USING (workspace_id, cluster_id)
+ORDER BY under_utilised DESC, list_cost_30d DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li><code class="i">under_utilised = true</code> rows come first, sorted by cost: these are your right-sizing candidates.</li><li>Low CPU with high <code class="i">avg_mem_used_pct</code> means the cluster is memory-bound. Move to a memory-optimised node type rather than shrinking it.</li><li>Low average but high p95 is a bursty workload: autoscaling fits better than a smaller fixed size.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Batch job clusters averaging well above 40% busy while running.</li><li>Few or no under-utilised clusters with material cost.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Threshold</span><p>Flag a cluster as under-utilised when it ran for <b>at least 30 minutes</b>, with <b>average CPU busy below 20%</b> and <b>p95 below 40%</b>. The p95 condition stops you shrinking a cluster that genuinely peaks.</p></div>
+      </article>
+
+      <article class="q" id="q10" data-q="q10">
+        <div class="q-head"><span class="q-id">Q10</span><h3>Autoscale min = max, and interactive clusters that never sleep</h3></div>
+        <div class="q-tables"><code>system.compute.clusters</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">Two configuration smells in one pass over the latest cluster definitions. When <code class="i">min_autoscale_workers</code> equals <code class="i">max_autoscale_workers</code>, autoscaling is switched off in practice. When <code class="i">auto_termination_minutes</code> is 0, an interactive cluster runs until someone stops it.</p>
+<pre><code class="sql" data-file="Q10_fixed_size_and_no_autotermination.sql">-- Q10  Live interactive clusters: autoscale min = max, or no / long auto-termination  (read-only)
+WITH latest_clusters AS (
+  SELECT *
+  FROM system.compute.clusters
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, cluster_id ORDER BY change_time DESC) = 1
+)
+SELECT
+  workspace_id,
+  cluster_id,
+  cluster_name,
+  cluster_source,
+  owned_by,
+  worker_node_type,
+  worker_count,
+  min_autoscale_workers,
+  max_autoscale_workers,
+  auto_termination_minutes,
+  concat_ws(' | ',
+    CASE WHEN min_autoscale_workers IS NOT NULL
+          AND min_autoscale_workers = max_autoscale_workers
+         THEN 'Autoscale min = max' END,
+    CASE WHEN COALESCE(auto_termination_minutes, 0) = 0
+         THEN 'No auto-termination' END,
+    CASE WHEN auto_termination_minutes &gt; 60
+         THEN 'Idle window over 60 min' END
+  ) AS findings
+FROM latest_clusters
+WHERE delete_time IS NULL
+  AND cluster_source IN ('UI', 'API')
+  AND (   (min_autoscale_workers IS NOT NULL AND min_autoscale_workers = max_autoscale_workers)
+       OR COALESCE(auto_termination_minutes, 0) = 0
+       OR auto_termination_minutes &gt; 60)
+ORDER BY findings, cluster_name;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>"No auto-termination" is the urgent one: cross-check the cluster in Q09 to see how much of its time is idle.</li><li>"Autoscale min = max" is a fixed-size cluster with an autoscaling label. Lower the minimum or make the size explicit.</li><li>Clusters created by jobs (JOB source) are excluded: they end with the run.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <ul><li>Every interactive cluster auto-terminates, typically after 30 to 60 idle minutes, enforced by a cluster policy.</li><li>Autoscaling minimums at 1 or 2 workers unless there is a written reason.</li></ul></div>
+        </div>
+        <div class="bench"><span class="lbl">Benchmark</span><p>Databricks sets a <b>120-minute</b> auto-termination default for clusters created in the UI. Many teams tighten interactive clusters to <b>30 to 60 minutes</b> through policy. Never 0 for shared interactive compute.</p></div>
+      </article>
+
+      <article class="q" id="q11" data-q="q11">
+        <div class="q-head"><span class="q-id">Q11</span><h3>Scheduled work running on all-purpose compute</h3></div>
+        <div class="q-tables"><code>system.lakeflow.job_task_run_timeline</code><code>system.compute.clusters</code><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.lakeflow.jobs</code><span class="chip estimated">Estimated</span></div>
+        <p class="q-why">Databricks bills jobs that run on all-purpose clusters to the cluster, not the job: <code class="i">usage_metadata.job_id</code> is not populated for them. So filtering billing on ALL_PURPOSE SKUs with a job id returns nothing. Instead, this query reads <code class="i">compute_ids</code> on each task run, keeps the ones that point at interactive clusters (source UI or API), then prices the cluster-hours those tasks touched.</p>
+<pre><code class="sql" data-file="Q11_jobs_on_all_purpose_compute.sql">-- Q11  Jobs whose tasks ran on all-purpose clusters, last 90 days  (read-only)
+WITH latest_clusters AS (
+  SELECT workspace_id, cluster_id, cluster_name, cluster_source, owned_by
+  FROM system.compute.clusters
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, cluster_id ORDER BY change_time DESC) = 1
+),
+task_clusters AS (
+  SELECT t.workspace_id, t.job_id, t.period_start_time,
+         explode(t.compute_ids) AS cluster_id
+  FROM system.lakeflow.job_task_run_timeline t
+  WHERE t.period_start_time &gt;= current_date() - INTERVAL 90 DAYS
+),
+task_hours AS (            -- each hour in which a scheduled task touched an interactive cluster
+  SELECT DISTINCT
+    tc.workspace_id, tc.job_id, tc.cluster_id, c.cluster_name, c.owned_by,
+    date_trunc('HOUR', tc.period_start_time) AS usage_hour
+  FROM task_clusters tc
+  JOIN latest_clusters c USING (workspace_id, cluster_id)
+  WHERE c.cluster_source IN ('UI', 'API')
+),
+cluster_hour_cost AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.cluster_id               AS cluster_id,
+    date_trunc('HOUR', u.usage_start_time)    AS usage_hour,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.sku_name LIKE '%ALL_PURPOSE%'
+  GROUP BY ALL
+),
+latest_jobs AS (
+  SELECT workspace_id, job_id, name
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+)
+SELECT
+  th.workspace_id,
+  th.job_id,
+  j.name                         AS job_name,
+  th.cluster_id,
+  th.cluster_name,
+  th.owned_by                    AS cluster_owner,
+  COUNT(*)                       AS cluster_hours_touched,
+  ROUND(SUM(chc.list_cost), 2)   AS est_all_purpose_list_cost_90d
+FROM task_hours th
+LEFT JOIN cluster_hour_cost chc USING (workspace_id, cluster_id, usage_hour)
+LEFT JOIN latest_jobs j         USING (workspace_id, job_id)
+GROUP BY ALL
+ORDER BY est_all_purpose_list_cost_90d DESC NULLS LAST;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>Every row is a scheduled job that depends on an interactive cluster. That is a cost and a reliability risk (someone can restart or resize it mid-run).</li><li>The cost is an <b>upper bound</b>: it is the whole cluster's cost in each hour a task touched it, including any interactive use in the same hour. Two jobs sharing an hour both count it.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <p>Zero rows. Scheduled production work runs on jobs compute or serverless jobs, where it is cheaper per DBU at list price and every run is traceable in billing.</p></div>
+        </div>
+        <div class="bench"><span class="lbl">Sizing it</span><p>To estimate the move, compare the current list price of your ALL_PURPOSE SKU with the matching JOBS SKU in <code class="i">system.billing.list_prices</code> and apply the ratio to this cost. Label the result as <b>estimated</b> until a job has actually run on jobs compute.</p></div>
+      </article>
+
+      <aside class="inline-cta" aria-label="Book a call">
+        <div>
+          <span class="kicker">Found more than you expected?</span>
+          <h3>Walk through your results with <em>an engineer</em></h3>
+          <p>30 minutes on a call. If you have run the queries, we walk through your results together. If not, we run the first checks live. Your workloads, not a generic demo.</p>
+        </div>
+        <a class="btn" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=ch4-inline">Book a call <span class="arr" aria-hidden="true">&rarr;</span></a>
+      </aside>
+    </section>
+
+    <!-- ===== 5. CLASSIFY IT ===== -->
+    <section id="ch-classify" class="chapter" data-title="Classify it" data-n="5">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">05</div>
+        <div>
+          <span class="kicker">Chapter 5</span>
+          <h2>Classify <em>it</em></h2>
+          <p class="why">Not every job should move, and not every job should stay. Sort each workload by <b>how complex it is</b> and <b>how deeply it depends on Databricks-only features</b>. The query fills in what the system tables know; you fill in the rest.</p>
+        </div>
+      </div>
+
+      <article class="q" id="q12" data-q="q12">
+        <div class="q-head"><span class="q-id">Q12</span><h3>Job complexity and dependency worksheet</h3></div>
+        <div class="q-tables"><code>system.lakeflow.jobs</code><code>system.lakeflow.job_tasks</code><code>system.billing.usage</code><code>system.billing.list_prices</code><code>system.compute.node_types</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">For each live job: task count and dependency edges from <code class="i">job_tasks</code> (<code class="i">depends_on_keys</code>), a structural complexity band, and three dependency signals billing can see for you: serverless, Photon and GPU usage. The others (dbutils, Databricks SDK, Lakeflow Declarative Pipelines, ML, streaming) need a look at the code.</p>
+<pre><code class="sql" data-file="Q12_job_complexity_worksheet.sql">-- Q12  Job complexity and dependency worksheet, last 90 days  (read-only)
+WITH latest_jobs AS (
+  SELECT *
+  FROM system.lakeflow.jobs
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id ORDER BY change_time DESC) = 1
+),
+latest_tasks AS (
+  SELECT *
+  FROM system.lakeflow.job_tasks
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY workspace_id, job_id, task_key ORDER BY change_time DESC) = 1
+),
+task_shape AS (
+  SELECT
+    workspace_id, job_id,
+    COUNT(*) AS task_count,
+    SUM(CASE WHEN depends_on_keys IS NULL THEN 0 ELSE size(depends_on_keys) END) AS dependency_edges,
+    MAX(CASE WHEN depends_on_keys IS NULL THEN 0 ELSE size(depends_on_keys) END) AS max_fan_in
+  FROM latest_tasks
+  WHERE delete_time IS NULL
+  GROUP BY ALL
+),
+gpu_nodes AS (
+  SELECT DISTINCT node_type FROM system.compute.node_types WHERE gpu_count &gt; 0
+),
+job_usage AS (
+  SELECT
+    u.workspace_id,
+    u.usage_metadata.job_id AS job_id,
+    SUM(u.usage_quantity
+        * COALESCE(p.pricing.effective_list.default, p.pricing.default)) AS list_cost,
+    bool_or(u.product_features.is_serverless)  AS uses_serverless,
+    bool_or(u.product_features.is_photon)      AS uses_photon,
+    bool_or(g.node_type IS NOT NULL)           AS uses_gpu
+  FROM system.billing.usage u
+  JOIN system.billing.list_prices p
+    ON  u.sku_name   = p.sku_name
+    AND u.cloud      = p.cloud
+    AND u.usage_unit = p.usage_unit
+    AND u.usage_start_time &gt;= p.price_start_time
+    AND (p.price_end_time IS NULL OR u.usage_start_time &lt; p.price_end_time)
+  LEFT JOIN gpu_nodes g ON g.node_type = u.usage_metadata.node_type
+  WHERE u.usage_date &gt;= current_date() - INTERVAL 90 DAYS
+    AND u.usage_metadata.job_id IS NOT NULL
+  GROUP BY ALL
+)
+SELECT
+  j.workspace_id,
+  j.job_id,
+  j.name                                   AS job_name,
+  j.run_as_user_name,
+  j.trigger_type,
+  s.task_count,
+  s.dependency_edges,
+  s.max_fan_in,
+  CASE WHEN s.task_count &gt;= 10 OR s.dependency_edges &gt;= 12 THEN 'High'
+       WHEN s.task_count &gt;= 4  OR s.dependency_edges &gt;= 4  THEN 'Medium'
+       ELSE 'Low' END                      AS structural_complexity,
+  COALESCE(ju.uses_serverless, false)      AS uses_serverless,
+  COALESCE(ju.uses_photon, false)          AS uses_photon,
+  COALESCE(ju.uses_gpu, false)             AS uses_gpu,
+  ROUND(COALESCE(ju.list_cost, 0), 2)      AS list_cost_90d
+FROM latest_jobs j
+JOIN task_shape s USING (workspace_id, job_id)
+LEFT JOIN job_usage ju USING (workspace_id, job_id)
+WHERE j.delete_time IS NULL
+ORDER BY list_cost_90d DESC;</code></pre>
+        <div class="rg">
+          <div class="read"><h4><svg aria-hidden="true"><use href="#i-eye"/></svg>How to read the result</h4>
+            <ul><li>Start with the top 20 by <code class="i">list_cost_90d</code>. Classifying the long tail rarely pays back.</li><li><code class="i">structural_complexity</code> is a starting band. Raise it if tasks hide large notebooks or custom libraries.</li><li>Carry the serverless, Photon and GPU flags into the scorer below, then add what you find in the code.</li></ul></div>
+          <div class="good"><h4><svg aria-hidden="true"><use href="#i-target"/></svg>What good looks like</h4>
+            <p>Every job above your cost cut-off has one of the five outcomes, an owner, and a reason a reviewer could challenge.</p></div>
+        </div>
+      </article>
+
+      <article class="q" id="scorer" data-q="scorer">
+        <div class="q-head"><span class="q-id">Worksheet</span><h3>Keep or move: score each workload</h3></div>
+        <p class="q-why">Pick a complexity band and tick the Databricks dependencies you found. Lakeflow Declarative Pipelines (formerly DLT), ML and streaming weigh 2 points each because they are the hardest to replicate elsewhere; the rest weigh 1. <b>Low</b> dependency is 0 to 1 points, <b>Medium</b> 2 to 3, <b>High</b> 4 or more. Scores stay in this browser.</p>
+        <div class="matrix" role="table" aria-label="Outcome matrix: dependency by complexity">
+          <div class="h" role="columnheader">Dependency</div><div class="h col" role="columnheader">Low complexity</div><div class="h col" role="columnheader">Medium</div><div class="h col" role="columnheader">High</div>
+          <div class="h" role="rowheader">High</div><div class="cell o-keep">Keep on Databricks</div><div class="cell o-keep">Keep on Databricks</div><div class="cell o-keep">Keep on Databricks</div>
+          <div class="h" role="rowheader">Medium</div><div class="cell o-evaluate">Evaluate</div><div class="cell o-optimise">Optimise then evaluate</div><div class="cell o-defer">Defer</div>
+          <div class="h" role="rowheader">Low</div><div class="cell o-migrate">Migrate</div><div class="cell o-evaluate">Evaluate</div><div class="cell o-optimise">Optimise then evaluate</div>
+        </div>
+        <p class="note">A starting heuristic, not a verdict. Defer anything whose 90-day cost would not pay for the effort of moving it, whatever the matrix says.</p>
+        <div class="scorer" id="scorer-rows"></div>
+        <div class="scorer-foot">
+          <button class="linkbtn" type="button" id="add-row">+ Add workload</button>
+          <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+            <button class="linkbtn danger" type="button" id="clear-scorer">Clear</button>
+            <button class="btn sm" type="button" id="to-sheet">Send to Evidence Sheet</button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== 6. PROVE IT ===== -->
+    <section id="ch-prove" class="chapter" data-title="Prove it" data-n="6">
+      <div class="chapter-head">
+        <div class="ch-num" aria-hidden="true">06</div>
+        <div>
+          <span class="kicker">Chapter 6</span>
+          <h2>Prove <em>it</em></h2>
+          <p class="why">A move only counts when the new output matches the old one. Run this parity checklist for <b>every migrated job</b> before you switch the old one off, and keep the results with the change record.</p>
+        </div>
+      </div>
+
+      <article class="q" id="q13" data-q="q13">
+        <div class="q-head"><span class="q-id">Q13</span><h3>Parity checklist for any migrated job</h3></div>
+        <div class="q-tables"><code>your source table</code><code>your target table</code><code>system.information_schema.columns</code><span class="chip measured">Measured</span></div>
+        <p class="q-why">Generic SQL templates. Fill in the fields and every template below rewrites itself. Use three-part names. If the target lives outside Databricks, land its output in a comparison schema first, or run the same SQL on the target engine and compare results side by side.</p>
+        <div class="gen" id="parity-gen">
+          <div class="field"><label for="pg-src">Source table (old job output)</label><input id="pg-src" value="legacy.sales.orders" spellcheck="false" autocomplete="off"></div>
+          <div class="field"><label for="pg-tgt">Target table (migrated job output)</label><input id="pg-tgt" value="migrated.sales.orders" spellcheck="false" autocomplete="off"></div>
+          <div class="field"><label for="pg-key">Business key column(s)</label><input id="pg-key" value="order_id" spellcheck="false" autocomplete="off"></div>
+          <div class="field"><label for="pg-num">Numeric columns to aggregate</label><input id="pg-num" value="amount, quantity" spellcheck="false" autocomplete="off"></div>
+          <div class="field full"><label for="pg-cols">All columns to compare (comma separated)</label><input id="pg-cols" value="order_id, customer_id, order_date, status, amount, quantity" spellcheck="false" autocomplete="off"></div>
+          <p class="hint">Runs entirely in your browser. Nothing you type here is sent anywhere.</p>
+        </div>
+        <div class="parity-steps">
+          <div class="ps"><h4>Row and column counts</h4><p>Same number of rows, same number of columns, no duplicate business keys on either side.</p><span class="pass"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass: exact match, zero duplicates</span>
+<pre><code class="sql" data-file="Q13_1_counts.sql" data-tpl="counts"></code></pre></div>
+          <div class="ps"><h4>Schema match</h4><p>Every column present on both sides with the same data type.</p><span class="pass"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass: every row says Match</span>
+<pre><code class="sql" data-file="Q13_2_schema.sql" data-tpl="schema"></code></pre></div>
+          <div class="ps"><h4>Null rates per column</h4><p>A column that is suddenly emptier, or fuller, is the most common silent break.</p><span class="pass"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass: identical null % per column</span>
+<pre><code class="sql" data-file="Q13_3_null_rates.sql" data-tpl="nulls"></code></pre></div>
+          <div class="ps"><h4>Numeric aggregates</h4><p>Sums, minimums, maximums and averages for the columns finance cares about.</p><span class="pass"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass: equal to the agreed precision</span>
+<pre><code class="sql" data-file="Q13_4_aggregates.sql" data-tpl="aggs"></code></pre></div>
+          <div class="ps"><h4>Row-level comparison</h4><p>Part A uses EXCEPT ALL for an exact set comparison. Part B hashes each row by business key and counts missing, extra and changed rows. Part C lists the first differing keys to inspect.</p><span class="pass"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass: zero rows in A, zero missing, extra and changed in B</span>
+<pre><code class="sql" data-file="Q13_5a_except_all.sql" data-tpl="except"></code></pre>
+<pre><code class="sql" data-file="Q13_5b_hash_by_key.sql" data-tpl="hash"></code></pre>
+<pre><code class="sql" data-file="Q13_5c_differing_keys.sql" data-tpl="diffs"></code></pre></div>
+        </div>
+        <p class="caveat"><svg aria-hidden="true"><use href="#i-warn"/></svg><span>Across engines, cast floating-point columns to a fixed DECIMAL and normalise timestamps to UTC before hashing, or identical data will hash differently. Record any accepted tolerance in the change record.</span></p>
+      </article>
+    </section>
+
+  </div>
+</div>
+
+<!-- ============ EVIDENCE SHEET ============ -->
+<section class="sheet-section" id="evidence-sheet" data-title="Renewal Evidence Sheet" data-n="&#9998;">
+  <div class="wrap">
+    <div class="sheet-intro">
+      <span class="kicker">One page for the renewal meeting</span>
+      <h2>Renewal <em>Evidence Sheet</em></h2>
+      <p>Fill it in as you run the queries, then print it or save it as a PDF. Every field says which query feeds it and whether the number is measured or estimated.</p>
+      <div class="privacy"><svg aria-hidden="true"><use href="#i-lock"/></svg>No data leaves your browser. It is saved only in this browser's local storage.</div>
+    </div>
+
+    <form class="sheet" id="sheet" autocomplete="off" onsubmit="return false">
+      <div class="sheet-head">
+        <div>
+          <h3>Databricks Renewal <em>Evidence Sheet</em></h3>
+          <p class="sub">Built from Databricks system tables using the BigHammer.ai Cost Field Guide. Costs at list price, before contract discounts.</p>
+        </div>
+        <img src="brand/bighammer-logo-dark.svg" alt="BigHammer.ai" width="130" height="24">
+      </div>
+
+      <div class="sblock">
+        <div class="sgrid">
+          <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" placeholder="Company name"></div>
+          <div class="field"><label for="f-preparer">Prepared by</label><input id="f-preparer" name="preparer" placeholder="Name, role"></div>
+          <div class="field"><label for="f-date">Data pulled on</label><input id="f-date" name="pulled" type="date"></div>
+          <div class="field"><label for="f-renewal">Renewal date</label><input id="f-renewal" name="renewal" type="date"></div>
+          <div class="field wide" style="grid-column:span 2"><label for="f-scope">Workspaces in scope</label><input id="f-scope" name="scope" placeholder="e.g. all production workspaces"></div>
+          <div class="field"><label for="f-cur">Currency</label><select id="f-cur" name="currency"><option value="$">USD ($)</option><option value="£">GBP (£)</option><option value="€">EUR (€)</option></select></div>
+          <div class="field"><label for="f-window">Window (days)</label><input id="f-window" name="window" type="number" min="1" value="90"></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">1</span><h4>90-day baseline</h4><span class="chip estimated">Estimated</span><span class="src">Q01</span></div>
+        <div class="sgrid">
+          <div class="field"><label for="f-total">Total list cost</label><div class="money" data-cur="$"><input id="f-total" name="total" inputmode="decimal" placeholder="0"></div></div>
+          <div class="calc"><span class="flabel">Annualised run-rate</span><span class="v" id="c-annual">&nbsp;</span></div>
+          <div class="field"><label for="f-top1">Largest product, % of total</label><input id="f-top1" name="top1" placeholder="e.g. JOBS, 0%"></div>
+          <div class="field"><label for="f-top2">Second product, % of total</label><input id="f-top2" name="top2" placeholder="e.g. ALL_PURPOSE, 0%"></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">2</span><h4>Traceability</h4><span class="chip measured">Measured</span><span class="chip waste">Gap</span><span class="src">Q03, Q04, Q05</span></div>
+        <div class="sgrid">
+          <div class="field"><label for="f-traced">Traced to a job run</label><div class="money" data-cur="$"><input id="f-traced" name="traced" inputmode="decimal" placeholder="0"></div></div>
+          <div class="calc"><span class="flabel">Traced %</span><span class="v" id="c-tracedpct">&nbsp;</span></div>
+          <div class="calc"><span class="flabel">Not yet attributable (gap)</span><span class="v gap" id="c-gap">&nbsp;</span></div>
+          <div class="field"><label for="f-untagged">Untagged cluster cost</label><div class="money" data-cur="$"><input id="f-untagged" name="untagged" inputmode="decimal" placeholder="0"></div></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">3</span><h4>Top 10 jobs and owners</h4><span class="chip estimated">Estimated</span><span class="src">Q02</span></div>
+        <table class="tbl jobs" id="jobs-tbl">
+          <thead><tr><th></th><th>Job</th><th>Owner</th><th style="width:150px">90-day list cost</th><th style="width:190px">Next action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="sgrid" style="margin-top:10px">
+          <div class="calc"><span class="flabel">Top 10 total</span><span class="v" id="c-top10">&nbsp;</span></div>
+          <div class="calc"><span class="flabel">Share of baseline</span><span class="v" id="c-top10pct">&nbsp;</span></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">4</span><h4>Reliability cost</h4><span class="chip estimated">Estimated</span><span class="src">Q06, Q07, Q08</span></div>
+        <div class="sgrid">
+          <div class="field"><label for="f-failed">Failed, errored, timed-out run cost</label><div class="money" data-cur="$"><input id="f-failed" name="failed" inputmode="decimal" placeholder="0"></div></div>
+          <div class="calc"><span class="flabel">Share of baseline</span><span class="v" id="c-failedpct">&nbsp;</span></div>
+          <div class="field"><label for="f-repairs">Repair attempts (90 days)</label><input id="f-repairs" name="repairs" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label for="f-notimeout">Jobs with no timeout</label><input id="f-notimeout" name="notimeout" inputmode="numeric" placeholder="0"></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">5</span><h4>Right-sizing flags</h4><span class="chip measured">Measured</span><span class="src">Q09, Q10, Q11</span></div>
+        <div class="sgrid">
+          <div class="field"><label for="f-underutil">Under-utilised clusters</label><input id="f-underutil" name="underutil" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label for="f-underutilcost">Their 30-day list cost</label><div class="money" data-cur="$"><input id="f-underutilcost" name="underutilcost" inputmode="decimal" placeholder="0"></div></div>
+          <div class="field"><label for="f-noterm">No auto-termination / min = max</label><input id="f-noterm" name="noterm" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label for="f-apjobs">Jobs on all-purpose (est. cost)</label><div class="money" data-cur="$"><input id="f-apjobs" name="apjobs" inputmode="decimal" placeholder="0"></div></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">6</span><h4>Keep vs move</h4><span class="src">Q12 and scorer</span></div>
+        <table class="tbl keep" id="keep-tbl">
+          <thead><tr><th></th><th>Workload</th><th style="width:220px">Outcome</th><th>Reason / evidence</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="sblock">
+        <div class="sblock-h"><span class="n">7</span><h4>Our position for the renewal</h4></div>
+        <div class="sgrid">
+          <div class="field wide" style="grid-column:1/-1"><label for="f-asks">What we will ask for, and the evidence behind it</label><textarea id="f-asks" name="asks" rows="3" placeholder="e.g. commit level based on measured baseline, fixes already scheduled, workloads under evaluation"></textarea></div>
+          <div class="field wide" style="grid-column:span 2"><label for="f-signoff">Reviewed by</label><input id="f-signoff" name="signoff" placeholder="Names"></div>
+          <div class="field wide" style="grid-column:span 2"><label for="f-next">Next review date</label><input id="f-next" name="next" type="date"></div>
+        </div>
+      </div>
+
+      <div class="sheet-foot">
+        <p class="disc">Costs are list price, before contract discounts, from system.billing.usage and system.billing.list_prices. Untraced spend is a visibility gap, not a saving.</p>
+        <img src="brand/bighammer-logo-dark.svg" alt="" width="110" height="20" class="print-only" style="height:18px;width:auto">
+      </div>
+    </form>
+
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="print-sheet">Print or save as PDF</button>
+      <button class="btn ghost" type="button" id="clear-sheet">Clear the sheet</button>
+      <a class="btn ghost" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=sheet-cta">Review it with us</a>
+    </div>
+    <p class="saved" id="saved-note"><i></i><span>Saved in this browser</span></p>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="closing" id="full-assessment" data-title="What the assessment adds" data-n="+">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="kicker">What the full assessment adds</span>
+    <h2>The guide shows <em>where</em>. The assessment puts it in <em>one report</em>.</h2>
+    <p class="lede">These queries answer one question at a time. The offline assessment answers them together: seven published, read-only SQL queries you run in your own Databricks SQL warehouse, and one defensible report back. No credentials leave your environment.</p>
+    <div class="compare">
+      <div>
+        <h3>This field guide</h3>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>13 read-only queries you run yourself</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>List-price view of spend, failures and idle compute</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>A heuristic keep-or-move score per workload</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Parity templates you adapt by hand</span></li>
+        </ul>
+      </div>
+      <div class="plus">
+        <h3>The offline assessment</h3>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#i-plus"/></svg><span>7 published, read-only SQL queries, run in one Databricks SQL warehouse session</span></li>
+          <li><svg aria-hidden="true"><use href="#i-plus"/></svg><span>Results exported to CSV, zipped and sent to BigHammer. No credentials leave your environment</span></li>
+          <li><svg aria-hidden="true"><use href="#i-plus"/></svg><span>Total 90-day cost, cost by product, traced versus untraced spend and failed-job cost in one report</span></li>
+          <li><svg aria-hidden="true"><use href="#i-plus"/></svg><span>Per-job and per-run cost tables, with measured and estimated figures kept separate</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ctas">
+      <a class="btn" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=closing-cta">Book a call <span class="arr" aria-hidden="true">&rarr;</span></a>
+      <a class="btn ghost-light" href="https://assessment.bighammerops.com/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=closing-assessment">Start the offline assessment</a>
+    </div>
+    <p class="fine">From the team behind the webinar "Reduce your Databricks Costs up to 75%", hosted by Srinath Reddy, Founder and CEO, BigHammer.ai.</p>
+
+    <div class="tools">
+      <a class="tool" href="https://adisuja.github.io/bighammer-cost-xray/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-xray">
+        <span class="kicker">Free tool</span><b>Cost X-Ray</b><span>Paste the CSVs from three short queries and get an instant report. Runs in your browser.</span><span class="go">Open the X-Ray &rarr;</span></a>
+      <a class="tool" href="https://assessment.bighammerops.com/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-assessment">
+        <span class="kicker">Offline</span><b>Full assessment</b><span>Seven read-only SQL queries in your own SQL warehouse. One defensible report back.</span><span class="go">Start the assessment &rarr;</span></a>
+      <a class="tool" href="https://bighammer.ai/book-demo/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=tools-book">
+        <span class="kicker">30 minutes</span><b>Talk to an engineer</b><span>Bring your results, or run the first checks live together. Leave knowing which levers to pull first.</span><span class="go">Book a call &rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <a href="https://bighammer.ai/?utm_source=cost-field-guide&amp;utm_medium=lead-magnet&amp;utm_campaign=dbx-webinar-nurture-2026&amp;utm_content=footer-logo"><img src="brand/bighammer-logo-light.svg" alt="BigHammer.ai" width="120" height="22"></a>
+    <span>The Databricks Cost Field Guide. Queries checked against the Databricks system table reference, October 2026. Databricks is a trademark of Databricks, Inc.</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><i></i><span></span></div>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
