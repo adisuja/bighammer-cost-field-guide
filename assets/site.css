@@ -423,7 +423,7 @@ footer.site a{color:rgba(255,255,255,.75)}
 
 /* ---------- print ---------- */
 @media print{
-  @page{size:A4;margin:12mm 12mm 14mm}
+  @page{size:A4;margin:9mm 11mm 9mm}
   html{scroll-behavior:auto}
   body{font-size:11pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fff}
   .topbar,.mbar,.side,.copy,.expand,.toast,.skip,.inline-cta,.sheet-actions,.saved,.no-print,.tools,footer.site,.closing .ctas{display:none!important}
